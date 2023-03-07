@@ -1,6 +1,14 @@
 {
   "name": "buqiu/kafka",
   "description": "Kafka distributed publish subscribe message system extension package.",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "董坤鸿",
+      "email": "249529979@qq.com"
+    }
+  ],
   "keywords": [
     "laravel",
     "kafka",
