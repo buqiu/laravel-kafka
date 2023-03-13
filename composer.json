@@ -1,34 +1,36 @@
 {
-  "name": "buqiu/kafka",
-  "description": "Kafka distributed publish subscribe message system extension package.",
-  "type": "library",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "董坤鸿",
-      "email": "249529979@qq.com"
-    }
-  ],
-  "keywords": [
-    "laravel",
-    "kafka",
-    "buqiu"
-  ],
-  "require": {
-    "php": "^8.1",
-    "laravel/framework": "^10.2"
-  },
-  "autoload": {
-    "psr-4": {
-      "Buqiu\\Kafka\\": "src/"
-    }
-  },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Buqiu\\Kafka\\KafkaServiceProvider"
-      ]
-    }
-  },
-  "minimum-stability": "dev"
+    "name": "buqiu/kafka",
+    "description": "Kafka distributed publish subscribe message system extension package.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "董坤鸿",
+            "email": "249529979@qq.com"
+        }
+    ],
+    "keywords": [
+        "laravel",
+        "kafka",
+        "buqiu"
+    ],
+    "require": {
+        "php": "^8.1",
+        "laravel/framework": "^10.2",
+        "mateusjunges/laravel-kafka": "^1.12"
+    },
+    "autoload": {
+        "psr-4": {
+            "Buqiu\\Kafka\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Buqiu\\Kafka\\KafkaServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
