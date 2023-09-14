@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Buqiu\Kafka;
 
 use Buqiu\Kafka\Serializer\Deserializer;
 use Buqiu\Kafka\Serializer\Serializer;
-use Illuminate\Queue\Queue;
 use Illuminate\Contracts\Queue\Queue as QueueContract;
+use Illuminate\Queue\Queue;
 use Illuminate\Support\Facades\Log;
 use Junges\Kafka\Config\Sasl;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
@@ -20,10 +22,12 @@ class KafkaQueue extends Queue implements QueueContract
 
     public function size($queue = null)
     {
-
     }
 
     /**
+     * @param  mixed      $job
+     * @param  mixed      $data
+     * @param  null|mixed $queue
      * @throws \Exception
      */
     public function push($job, $data = '', $queue = null)
@@ -32,22 +36,25 @@ class KafkaQueue extends Queue implements QueueContract
         $producer = Kafka::publishOn($queue);
         // 设置配置项
         $producer->withConfigOptions([
-            'api.version.request' => config('kafka.api_version_request'),
-            'ssl.ca.location' => __DIR__.'/only-4096-ca-cert',
-            'acks' => config('kafka.acks'),
-            'retries' => config('kafka.retries'),
-            'retry.backoff.ms' => config('kafka.retry_backoff_ms'),
-            'socket.timeout.ms' => config('kafka.socket_timeout_ms'),
+            'api.version.request'      => config('kafka.api_version_request'),
+            'acks'                     => config('kafka.acks'),
+            'retries'                  => config('kafka.retries'),
+            'retry.backoff.ms'         => config('kafka.retry_backoff_ms'),
+            'socket.timeout.ms'        => config('kafka.socket_timeout_ms'),
             'reconnect.backoff.max.ms' => config('kafka.reconnect_backoff_max_ms'),
-            'request.timeout.ms' => config('kafka.request_timeout_ms'),
+            'request.timeout.ms'       => config('kafka.request_timeout_ms'),
         ]);
         // 设置 SASL 认证
-        $producer->withSasl(new Sasl(
-            username: config('kafka.sasl.username'),
-            password: config('kafka.sasl.password'),
-            mechanisms: config('kafka.sasl.mechanisms'),
-            securityProtocol: config('kafka.securityProtocol'),
-        ));
+        if ('SASL_SSL' == config('kafka.securityProtocol')) {
+            $producer->withConfigOption(name: 'ssl.ca.location', option: __DIR__.'/only-4096-ca-cert');
+
+            $producer->withSasl(new Sasl(
+                username: config('kafka.sasl.username'),
+                password: config('kafka.sasl.password'),
+                mechanisms: config('kafka.sasl.mechanisms'),
+                securityProtocol: config('kafka.securityProtocol'),
+            ));
+        }
         // 是否启用调试模式
         $producer->withDebugEnabled(config('kafka.debug'));
         // 设置序列化器
@@ -65,16 +72,15 @@ class KafkaQueue extends Queue implements QueueContract
 
     public function pushRaw($payload, $queue = null, array $options = [])
     {
-
     }
 
     public function later($delay, $job, $data = '', $queue = null)
     {
-
     }
 
     /**
-     * @throws \Exception|\Carbon\Exceptions\Exception
+     * @param  null|mixed                              $queue
+     * @throws \Carbon\Exceptions\Exception|\Exception
      */
     public function pop($queue = null)
     {
@@ -86,29 +92,32 @@ class KafkaQueue extends Queue implements QueueContract
         $consumer->withDlq();
         // 设置配置项
         $consumer->withOptions([
-            'api.version.request' => config('kafka.api_version_request'),
-            'ssl.ca.location' => __DIR__.'/only-4096-ca-cert',
+            'api.version.request'      => config('kafka.api_version_request'),
             'reconnect.backoff.max.ms' => config('kafka.reconnect_backoff_max_ms'),
-            'session.timeout.ms' => config('kafka.session_timeout_ms'),
+            'session.timeout.ms'       => config('kafka.session_timeout_ms'),
         ]);
         // 设置 SASL 认证
-        $consumer->withSasl(new Sasl(
-            username: config('kafka.sasl.username'),
-            password: config('kafka.sasl.password'),
-            mechanisms: config('kafka.sasl.mechanisms'),
-            securityProtocol: config('kafka.securityProtocol'),
-        ));
+        if ('SASL_SSL' == config('kafka.securityProtocol')) {
+            $consumer->withOption(name: 'ssl.ca.location', value: __DIR__.'/only-4096-ca-cert');
+
+            $consumer->withSasl(new Sasl(
+                username: config('kafka.sasl.username'),
+                password: config('kafka.sasl.password'),
+                mechanisms: config('kafka.sasl.mechanisms'),
+                securityProtocol: config('kafka.securityProtocol'),
+            ));
+        }
         // 设置序列化器
         $consumer->usingDeserializer(new Deserializer());
         // 设置处理程序
-        $consumer->withHandler(function(KafkaConsumerMessage $message) {
+        $consumer->withHandler(function (KafkaConsumerMessage $message) {
             $message->getBody()->handle();
         });
         // 构建消费者
         $consumer = $consumer->build();
         // 设置消费者消费消息后的回调
         $consumer->onStopConsuming(static function () {
-            Log::info('消费消息后的回调');
+            Log::info('消费者监听已停止！！！');
         });
         // 消费消息
         $consumer->consume();
