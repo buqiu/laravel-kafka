@@ -1,9 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 return [
-    /*
-     | Your kafka brokers url.
-     */
+    // Your kafka brokers url.
     'brokers' => env('KAFKA_BROKERS', 'localhost:9092'),
 
     /*
@@ -14,7 +14,7 @@ return [
      */
     'consumer_group_id' => env('KAFKA_CONSUMER_GROUP_ID', 'group'),
 
-    'consumer_timeout_ms' => env("KAFKA_CONSUMER_DEFAULT_TIMEOUT", 2000),
+    'consumer_timeout_ms' => env('KAFKA_CONSUMER_DEFAULT_TIMEOUT', 2000),
 
     /*
      | After the consumer receives its assignment from the coordinator,
@@ -35,14 +35,10 @@ return [
 
     'partition' => env('KAFKA_PARTITION', 0),
 
-    /*
-     | Kafka supports 4 compression codecs: none , gzip , lz4 and snappy
-     */
+    // Kafka supports 4 compression codecs: none , gzip , lz4 and snappy
     'compression' => env('KAFKA_COMPRESSION_TYPE', 'snappy'),
 
-    /*
-     | Choose if debug is enabled or not.
-     */
+    // Choose if debug is enabled or not.
     'debug' => env('KAFKA_DEBUG', false),
 
     /*
@@ -51,30 +47,24 @@ return [
      */
     'batch_repository' => env('KAFKA_BATCH_REPOSITORY', \Junges\Kafka\BatchRepositories\InMemoryBatchRepository::class),
 
-    /*
-     | The sleep time in milliseconds that will be used when retrying flush
-     */
+    // The sleep time in milliseconds that will be used when retrying flush
     'flush_retry_sleep_in_ms' => 100,
 
-    /*
-     | SASL configs
-     */
+    // SASL configs
     'securityProtocol' => env('KAFKA_SECURITY_PROTOCOL', 'SASL_SSL'),
-    'sasl' => [
+    'sasl'             => [
         'mechanisms' => env('KAFKA_SASL_MECHANISMS', 'PLAIN'),
-        'username' => env('KAFKA_SASL_USERNAME'),
-        'password' => env('KAFKA_SASL_PASSWORD'),
+        'username'   => env('KAFKA_SASL_USERNAME'),
+        'password'   => env('KAFKA_SASL_PASSWORD'),
     ],
 
-    /*
-     | Other configs
-     */
-    'acks' => env('ACKS', 1),
-    'retries' => env('KAFKA_RETRIES', 3),
-    'retry_backoff_ms' => env('KAFKA_RETRY_BACKOFF_MS', 100),
-    'socket_timeout_ms' => env('KAFKA_SOCKET_TIMEOUT_MS', 6000),
+    // Other configs
+    'acks'                     => env('ACKS', 1),
+    'retries'                  => env('KAFKA_RETRIES', 3),
+    'retry_backoff_ms'         => env('KAFKA_RETRY_BACKOFF_MS', 100),
+    'socket_timeout_ms'        => env('KAFKA_SOCKET_TIMEOUT_MS', 6000),
     'reconnect_backoff_max_ms' => env('KAFKA_RECONNECT_BACKOFF_MAX_MS', 3000),
-    'session_timeout_ms' => env('KAFKA_SESSION_TIMEOUT_MS', 10000),
-    'request_timeout_ms' => env('KAFKA_REQUEST_TIMEOUT_MS', 305000),
-    'api_version_request' => env('KAFKA_API_VERSION_REQUEST', true),
+    'session_timeout_ms'       => env('KAFKA_SESSION_TIMEOUT_MS', 10000),
+    'request_timeout_ms'       => env('KAFKA_REQUEST_TIMEOUT_MS', 305000),
+    'api_version_request'      => env('KAFKA_API_VERSION_REQUEST', true),
 ];
